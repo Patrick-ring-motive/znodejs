@@ -315,3 +315,27 @@ globalThis.zdecodeURI = function(s) {
         }
     }
 }
+
+function isIterable(obj) {
+    if (obj == null) {
+        return false;
+    }
+    return typeof obj[Symbol.iterator] === 'function';
+}
+
+globalThis.Array.zfrom = function() {
+    try {
+        if (isIterable(arguments[0])) {
+            return Array.from(...arguments);
+        }
+        if (typeof arguments[0] == 'object') {
+            return Array.from(Object.entries(arguments[0]), ...([...arguments].slice(1)));
+        }
+    } catch (e) {
+        try {
+            return Array.from(arguments, ...([...arguments].slice(1)));
+        } catch (e) {
+            return Array.from(arguments);
+        }
+    }
+}

@@ -254,3 +254,11 @@ globalThis.zatob = function(str) {
         }
     }
 }
+
+globalThis.RegExp.prototype.ztest = function(s) {
+    try {
+        return this.test(String(s));
+    } catch (e) {
+        return false;
+    }
+}

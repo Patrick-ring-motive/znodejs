@@ -286,7 +286,35 @@ globalThis.zencodeURI = function(s) {
         try {
             return encodeURI(String(s));
         } catch (e) {
-            return encodeURIComponent(s);
+            return zencodeURIComponent(s);
+        }
+    }
+}
+
+globalThis.zdecodeURIComponent = function(s) {
+    try {
+        return decodeURIComponent(s)
+    } catch (e) {
+        try {
+            return decodeURIComponent(String(s));
+        } catch (e) {
+            try {
+                return decodeURIComponent(String(s)?.toWellFormed?.());
+            } catch (e) {
+                return decodeURIComponent(e.message);
+            }
+        }
+    }
+}
+
+globalThis.zdecodeURI = function(s) {
+    try {
+        return decodeURI(s)
+    } catch (e) {
+        try {
+            return decodeURI(String(s));
+        } catch (e) {
+            return zdecodeURIComponent(s);
         }
     }
 }

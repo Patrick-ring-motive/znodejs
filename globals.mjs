@@ -90,7 +90,6 @@ globalThis.appendZResponseMethods = function(res) {
     return res;
 }
 globalThis.zfetch = async function() {
-    let res;
     try {
         return appendZResponseMethods(await fetch.apply(this, arguments));
     } catch (e) {
@@ -178,8 +177,6 @@ globalThis.zfetchText = async function() {
         return e.message;
     }
 }
-
-
 
 globalThis.zdecoder = function() {
     globalThis.decoder ??= new TextDecoder();

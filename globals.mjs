@@ -262,3 +262,31 @@ globalThis.RegExp.prototype.ztest = function(s) {
         return false;
     }
 }
+
+globalThis.zencodeURIComponent = function(s) {
+    try {
+        return encodeURIComponent(s)
+    } catch (e) {
+        try {
+            return encodeURIComponent(String(s));
+        } catch (e) {
+            try {
+                return encodeURIComponent(String(s)?.toWellFormed?.());
+            } catch (e) {
+                return encodeURIComponent(e.message);
+            }
+        }
+    }
+}
+
+globalThis.zencodeURI = function(s) {
+    try {
+        return encodeURI(s)
+    } catch (e) {
+        try {
+            return encodeURI(String(s));
+        } catch (e) {
+            return encodeURIComponent(s);
+        }
+    }
+}

@@ -73,7 +73,7 @@ http.IncomingMessage.prototype.zonEnd = function(){
 
 http.IncomingMessage.prototype.zread = function(){
   try{
-    return this.read(...arguments);
+    return this.read(...arguments)||"";
   }catch(e){
     console.log(e);
     return e.message;

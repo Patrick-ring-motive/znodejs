@@ -1,7 +1,9 @@
+/** Optional Chaining literally everything to try and idiot proof this code */
 void (async function () {
   await import("./zglobals.mjs");
   const zBuffer = (await import("./zbuffer.mjs"))?.zBuffer;
   const zhttp = (await import("./zhttp.mjs"))?.zhttp;
+  
   const hostTarget = "www.google.com";
 
   const server = zhttp?.createServer?.();
@@ -13,7 +15,7 @@ void (async function () {
     /* start reading the body of the request*/
     let body = "";
     req?.zonReadable?.(async() => {
-      body += req?.zread?.() || "";
+      body += req?.zread?.();
     });
     await zawait(
       new Promise((resolve) => {

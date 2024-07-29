@@ -29,7 +29,7 @@ void (async function () {
       headers: req?.headers,
     };
     /* fetch throws an error if you send a body with a GET request even if it is empty */
-    if (!`${req?.method}`.match?.(/GET|HEAD/) && body?.length > 4) {
+    if (!/GET|HEAD/?.ztest?.(req?.method) && body?.length > 4) {
       (options??{}).body = body;
     }
     /* finish copying over the other parts of the request */

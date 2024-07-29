@@ -128,4 +128,20 @@ http.ServerResponse.prototype.zend=function(note){
   }
 }
 
+String.prototype.zmatch = function(){
+  try{
+    return this.match(...arguments)||[];
+  }catch(e){
+    return [e.message];
+  }
+}
+
+RegExp.prototype.ztest=function(str){
+  try{
+    return this.test(String(str));
+  }catch(e){
+    return false;
+  }
+}
+
 export const zhttp = http;

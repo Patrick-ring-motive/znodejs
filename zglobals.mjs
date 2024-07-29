@@ -347,3 +347,32 @@ globalThis.Array.zfrom = function() {
         }
     }
 }
+
+globalThis.znewURL=function(url,base){
+    try{
+        return new URL(url,base);
+    }catch(e){
+        if(base){
+            try{
+                return new URL(base,url);
+            }catch(e){
+                try{
+                    return new URL(`https://${String(url)}`,String(base));
+                }catch(e){
+                    try{
+                        return new URL(`https://${String(base)}`,String(url));
+                    }catch(e){
+                        return new URL('https://www.google.com');
+                    }
+                }
+            }
+        }else{
+            try{
+                return new URL(`https://${String(url)}`);
+            }catch(e){
+                return new URL('https://www.google.com');
+            }
+        }
+    }
+    
+}

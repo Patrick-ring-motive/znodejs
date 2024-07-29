@@ -35,7 +35,7 @@ void (async function () {
     /* finish copying over the other parts of the request */
 
     /* fetch from your desired target */
-    const response = await zfetch?.(`https://${hostTarget}${req.url}`, options);
+    const response = await zfetch?.(znewURL(`https://${hostTarget}${req.url}`), options);
 
     /* copy over response headers*/
     res?.zsetHeaders?.(response?.headers);

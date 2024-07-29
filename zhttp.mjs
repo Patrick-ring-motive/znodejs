@@ -80,6 +80,23 @@ http.IncomingMessage.prototype.zread = function(){
   }
 }
 
+
+http.ServerResponse.prototype.zgetHeader=function(key){
+  try{
+    return this.getHeader(String(key));
+  }catch(e){
+    return e.message;
+  }
+}
+
+http.ServerResponse.prototype.zremoveHeader=function(key){
+  try{
+    return this.removeHeader(String(key));
+  }catch(e){
+    return e.message;
+  }
+}
+
 http.ServerResponse.prototype.zsetHeader=function(key,values){
   try{
     if(values?.map?.call){
@@ -105,6 +122,14 @@ http.ServerResponse.prototype.zsetHeaders=function(headers){
       console.log(e);
       this.zsetHeader(e.name,e.message);
     }
+  }
+}
+
+http.ServerResponse.prototype.zgetHeaders=function(){
+  try{
+    return Object.setPrototypeOf(this.getHeaders(),{});
+  }catch(e){
+    return {};
   }
 }
 

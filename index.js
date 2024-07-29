@@ -39,8 +39,8 @@ void (async function () {
 
     /* copy over response headers*/
     res?.zsetHeaders?.(response?.headers);
-    res?.removeHeader?.("content-length");
-    res?.removeHeader?.("content-encoding");
+    res?.zremoveHeader?.("content-length");
+    res?.zremoveHeader?.("content-encoding");
     /* check to see if the response is not a text format */
 
     /* Copy over target response and return */

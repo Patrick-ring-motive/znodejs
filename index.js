@@ -1,5 +1,5 @@
 /** Optional Chaining literally everything to try and idiot proof this code */
-void (async function () {
+void async function ProxyServerExample () {
   await import("./zglobals.mjs");
   const zBuffer = (await import("./zbuffer.mjs"))?.zBuffer;
   const zhttp = (await import("./zhttp.mjs"))?.zhttp;
@@ -47,4 +47,4 @@ void (async function () {
     const resBody = await response?.zarrayBuffer?.();
     res?.zend?.(zBuffer?.zfrom?.(resBody));
   });
-})();
+}();

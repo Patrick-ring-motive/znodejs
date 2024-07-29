@@ -1,5 +1,5 @@
 {
-  "name": "nodejs",
+  "name": "znodejs",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,9 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Patrick Ring <patrick.ring.motive@gmail.com>",,
   "license": "ISC",
   "dependencies": {
     "@types/node": "^18.0.6"
   }
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Patrick-ring-motive/znodejs.git"
+  },
 }

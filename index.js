@@ -1,5 +1,48 @@
 void (async function () {
-  await import("./globals.mjs");
+  await import("./zglobals.mjs");
+  const zBuffer = (await import("./zbuffer.mjs"))?.zBuffer;
+  const zhttp = (await import("./zhttp.mjs"))?.zhttp;
+  const hostTarget = "www.google.com";
 
-  console.log(await zfetchText("https://www.google.com"));
+  const server = zhttp?.createServer?.();
+  server?.zlisten?.(3000);
+  server?.zonRequest?.(async function (req, res) {
+    (req?.headers??{}).host = hostTarget;
+    (req?.headers??{}).referer = hostTarget;
+
+    /* start reading the body of the request*/
+    let body = "";
+    req?.zonReadable?.(async() => {
+      body += req?.zread?.() || "";
+    });
+    await zawait(
+      new Promise((resolve) => {
+        req?.zonEnd?.(resolve);
+      }),
+    );
+    /* finish reading the body of the request*/
+    /* start copying over the other parts of the request */
+    const options = {
+      method: req?.method,
+      headers: req?.headers,
+    };
+    /* fetch throws an error if you send a body with a GET request even if it is empty */
+    if (!`${req?.method}`.match?.(/GET|HEAD/) && body?.length > 4) {
+      (options??{}).body = body;
+    }
+    /* finish copying over the other parts of the request */
+
+    /* fetch from your desired target */
+    const response = await zfetch?.(`https://${hostTarget}${req.url}`, options);
+
+    /* copy over response headers*/
+    res?.zsetHeaders?.(response?.headers);
+    res?.removeHeader?.("content-length");
+    res?.removeHeader?.("content-encoding");
+    /* check to see if the response is not a text format */
+
+    /* Copy over target response and return */
+    const resBody = await response?.zarrayBuffer?.();
+    res?.zend?.(zBuffer?.zfrom?.(resBody));
+  });
 })();

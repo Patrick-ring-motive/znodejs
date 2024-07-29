@@ -1,3 +1,11 @@
+globalThis.zawait=async function(promise){
+    try{
+        return await promise;
+    }catch(e){
+        return e;
+    }
+}
+
 globalThis.newReadableStream = function(input) {
     return new Response(input).body;
 }

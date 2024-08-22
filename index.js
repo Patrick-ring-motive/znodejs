@@ -17,21 +17,17 @@ void async function ProxyServerExample () {
     req?.zonReadable?.(async() => {
       body += req?.zread?.();
     });
-    await zawait(
-      new Promise((resolve) => {
+    await zawait(new Promise((resolve) => {
         req?.zonEnd?.(resolve);
-      }),
-    );
+      }));
     /* finish reading the body of the request*/
     /* start copying over the other parts of the request */
     const options = {
       method: req?.method,
       headers: req?.headers,
+      body: body
     };
-    /* fetch throws an error if you send a body with a GET request even if it is empty */
-    if (!/GET|HEAD/?.ztest?.(req?.method) && body?.length > 4) {
-      (options??{}).body = body;
-    }
+    
     /* finish copying over the other parts of the request */
 
     /* fetch from your desired target */
@@ -41,6 +37,12 @@ void async function ProxyServerExample () {
     res?.zsetHeaders?.(response?.headers);
     res?.zremoveHeader?.("content-length");
     res?.zremoveHeader?.("content-encoding");
+    res?.zremoveHeader?.("x-frame-options");
+    res?.zgetHeaderNames?.forEach?.(x=>{
+      if(/security|policy/i?.ztest?.(x)){
+        res?.zremoveHeader?.(x);
+      }
+    });
     /* check to see if the response is not a text format */
 
     /* Copy over target response and return */

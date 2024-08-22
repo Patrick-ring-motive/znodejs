@@ -111,7 +111,7 @@ http.ServerResponse.prototype.zsetHeader=function(key,values){
 
 http.ServerResponse.prototype.zsetHeaders=function(headers){
   try{
-    return this.zsetHeaders(headers);
+    return this.setHeaders(headers);
   }catch(e){
     try{
       for(const x in headers){
@@ -130,6 +130,14 @@ http.ServerResponse.prototype.zgetHeaders=function(){
     return Object.setPrototypeOf(this.getHeaders(),{});
   }catch(e){
     return {};
+  }
+}
+
+http.ServerResponse.prototype.zgetHeaderNames=function(){
+  try{
+    return this.getHeaderNames();
+  }catch(e){
+    return [];
   }
 }
 

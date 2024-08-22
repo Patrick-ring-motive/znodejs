@@ -1,7 +1,9 @@
-globalThis.zawait=async function(promise){
-    try{
+import { urlToHttpOptions } from "url";
+
+globalThis.zawait = async function(promise) {
+    try {
         return await promise;
-    }catch(e){
+    } catch (e) {
         return e;
     }
 }
@@ -98,6 +100,15 @@ globalThis.appendZResponseMethods = function(res) {
     return res;
 }
 globalThis.zfetch = async function() {
+    [...arguments].forEach(x => {
+        try {
+            if (!(!/GET|HEAD/?.ztest?.(x?.method) && x?.body?.length > 4)) {
+                delete x?.body;
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    });
     try {
         return appendZResponseMethods(await fetch.apply(this, arguments));
     } catch (e) {
@@ -175,6 +186,15 @@ globalThis.znewResponse = function(body, options) {
 }
 
 globalThis.zfetchText = async function() {
+    [...arguments].forEach(x => {
+        try {
+            if (!(!/GET|HEAD/?.ztest?.(x?.method) && x?.body?.length > 4)) {
+                delete x?.body;
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    });
     try {
         let res = await fetch.apply(this, arguments);
         if (res.status > 399) {
@@ -183,6 +203,27 @@ globalThis.zfetchText = async function() {
         return await res.text();
     } catch (e) {
         return e.message;
+    }
+}
+
+globalThis.zfetchArrayBuffer = async function() {
+    [...arguments].forEach(x => {
+        try {
+            if (!(!/GET|HEAD/?.ztest?.(x?.method) && x?.body?.length > 4)) {
+                delete x?.body;
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    });
+    try {
+        let res = await fetch.apply(this, arguments);
+        if (res.status > 399) {
+            return await znewArrayBuffer(res.statusText);
+        }
+        return await res.arrayBuffer();
+    } catch (e) {
+        return await znewArrayBuffer(e.message);
     }
 }
 
@@ -348,31 +389,31 @@ globalThis.Array.zfrom = function() {
     }
 }
 
-globalThis.znewURL=function(url,base){
-    try{
-        return new URL(url,base);
-    }catch(e){
-        if(base){
-            try{
-                return new URL(base,url);
-            }catch(e){
-                try{
-                    return new URL(`https://${String(url)}`,String(base));
-                }catch(e){
-                    try{
-                        return new URL(`https://${String(base)}`,String(url));
-                    }catch(e){
+globalThis.znewURL = function(url, base) {
+    try {
+        return new URL(url, base);
+    } catch (e) {
+        if (base) {
+            try {
+                return new URL(base, url);
+            } catch (e) {
+                try {
+                    return new URL(`https://${String(url)}`, String(base));
+                } catch (e) {
+                    try {
+                        return new URL(`https://${String(base)}`, String(url));
+                    } catch (e) {
                         return new URL('https://www.google.com');
                     }
                 }
             }
-        }else{
-            try{
+        } else {
+            try {
                 return new URL(`https://${String(url)}`);
-            }catch(e){
+            } catch (e) {
                 return new URL('https://www.google.com');
             }
         }
     }
-    
+
 }

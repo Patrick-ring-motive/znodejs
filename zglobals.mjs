@@ -1,4 +1,4 @@
-import { urlToHttpOptions } from "url";
+/*import { urlToHttpOptions } from "url";*/
 
 globalThis.zawait = async function(promise) {
     try {
@@ -26,7 +26,7 @@ globalThis.newArrayBuffer = function(input) {
     for (let i = 0, inputLen = input.length; i < inputLen; i++) {
         try {
             bufView[i] = input?.charCodeAt?.(i) || +input[i];
-        } catch (e) { continue; }
+        } catch { continue; }
     }
     return buf;
 }
@@ -114,7 +114,7 @@ globalThis.zfetch = async function() {
     } catch (e) {
         try {
             return appendZResponseMethods(await fetch.call(this, arguments[0]));
-        } catch (r) {
+        } catch {
             console.log(e);
             return appendZResponseMethods(new Response(arguments[0] + '\n' + e.message + '\n' + e.stack, {
                 status: 569,

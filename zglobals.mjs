@@ -1,6 +1,6 @@
 /*import { urlToHttpOptions } from "url";*/
 
-globalThis.zawait = async function(promise) {
+globalThis.zawait = async function zawait(promise) {
     try {
         return await promise;
     } catch (e) {
@@ -8,11 +8,11 @@ globalThis.zawait = async function(promise) {
     }
 }
 
-globalThis.newReadableStream = function(input) {
+globalThis.newReadableStream = function newReadableStream(input) {
     return new Response(input).body;
 }
 
-globalThis.znewReadableStream = function(input) {
+globalThis.znewReadableStream = function znewReadableStream(input) {
     try {
         return newReadableStream(input);
     } catch (e) {
@@ -20,9 +20,9 @@ globalThis.znewReadableStream = function(input) {
     }
 }
 
-globalThis.newArrayBuffer = function(input) {
-    var buf = new ArrayBuffer(input.length * 2);
-    var bufView = new Uint16Array(buf);
+globalThis.newArrayBuffer = function newArrayBuffer(input) {
+    const buf = new ArrayBuffer(input.length * 2);
+    const bufView = new Uint16Array(buf);
     for (let i = 0, inputLen = input.length; i < inputLen; i++) {
         try {
             bufView[i] = input?.charCodeAt?.(i) || +input[i];
@@ -31,7 +31,7 @@ globalThis.newArrayBuffer = function(input) {
     return buf;
 }
 
-globalThis.znewArrayBuffer = function(input) {
+globalThis.znewArrayBuffer = function znewArrayBuffer(input) {
     try {
         return newArrayBuffer(input);
     } catch (e) {
@@ -39,23 +39,43 @@ globalThis.znewArrayBuffer = function(input) {
     }
 }
 
-globalThis.responseText = async function(res) {
+globalThis.responseText = async function responseText(res) {
     return await Response.prototype.text.apply(res);
 };
 
-globalThis.zresponseText = async function(re) {
+globalThis.requestText = async function requestText(res) {
+    return await Request.prototype.text.apply(res);
+};
+
+globalThis.zresponseText = async function zresponseText(re) {
     try {
         return await responseText(re);
     } catch (e) {
-        return e.message;
+        try {
+            return await requestText(re);
+        } catch {
+            return e.message;
+        }
     }
 }
 
-globalThis.responseArrayBuffer = async function(res) {
+globalThis.zrequestText = async function zrequestText(re) {
+    try {
+        return await requestText(re);
+    } catch (e) {
+        try {
+            return await responseText(re);
+        } catch {
+            return e.message;
+        }
+    }
+}
+
+globalThis.responseArrayBuffer = async function responseArrayBuffer(res) {
     return await Response.prototype.arrayBuffer.apply(res);
 };
 
-globalThis.zresponseArrayBuffer = async function(re) {
+globalThis.zresponseArrayBuffer = async function zresponseArrayBuffer(re) {
     try {
         return await responseArrayBuffer(re);
     } catch (e) {
@@ -64,7 +84,7 @@ globalThis.zresponseArrayBuffer = async function(re) {
 }
 
 
-globalThis.appendZResponseMethods = function(res) {
+globalThis.appendZResponseMethods = function appendZResponseMethods(res) {
     res ??= new Response(`${res}`);
     res.zbody = function() {
         res.body ??= znewReadableStream(`${res?.body}`);
@@ -99,7 +119,7 @@ globalThis.appendZResponseMethods = function(res) {
     }
     return res;
 }
-globalThis.zfetch = async function() {
+globalThis.zfetch = async function zfetch() {
     [...arguments].forEach(x => {
         try {
             if (!(!/GET|HEAD/?.ztest?.(x?.method) && x?.body?.length > 4)) {
@@ -124,7 +144,7 @@ globalThis.zfetch = async function() {
     }
 };
 
-globalThis.znewRequest = function(input, options) {
+globalThis.znewRequest = function znewRequest(input, options) {
     let req;
     try {
         if (!options) {
@@ -159,7 +179,7 @@ globalThis.znewRequest = function(input, options) {
     return req;
 }
 
-globalThis.znewResponse = function(body, options) {
+globalThis.znewResponse = function znewResponse(body, options) {
     let res;
     try {
         if (!options) {
@@ -185,7 +205,7 @@ globalThis.znewResponse = function(body, options) {
     return appendZResponseMethods(res);
 }
 
-globalThis.zfetchText = async function() {
+globalThis.zfetchText = async function zfetchText() {
     [...arguments].forEach(x => {
         try {
             if (!(!/GET|HEAD/?.ztest?.(x?.method) && x?.body?.length > 4)) {
@@ -206,7 +226,7 @@ globalThis.zfetchText = async function() {
     }
 }
 
-globalThis.zfetchArrayBuffer = async function() {
+globalThis.zfetchArrayBuffer = async function zfetchArrayBuffer() {
     [...arguments].forEach(x => {
         try {
             if (!(!/GET|HEAD/?.ztest?.(x?.method) && x?.body?.length > 4)) {
@@ -227,7 +247,7 @@ globalThis.zfetchArrayBuffer = async function() {
     }
 }
 
-globalThis.zdecoder = function() {
+globalThis.zdecoder = function zdecoder() {
     globalThis.decoder ??= new TextDecoder();
     globalThis.decoder.zdecode ??= function(raw) {
         try {

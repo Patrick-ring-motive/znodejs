@@ -1,7 +1,9 @@
 {
   "name": "znodejs",
-  "version": "1.0.3",
-  "author": "",
+
+  "version": "1.0.4",
+  "author": "Patrick Ring <patrick.ring.motive@gmail.com>",
+
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,8 +14,10 @@
     "url": "https://github.com/Patrick-ring-motive/znodejs.git"
   },
   "keywords": [],
+
   "license": "ISC",
   "dependencies": {
     "browserify": "^17.0.0"
   }
+
 }

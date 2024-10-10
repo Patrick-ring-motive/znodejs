@@ -719,9 +719,8 @@ globalThis.isNullish = function isNullish(obj){
 }
 
 globlThis.newQ = function newQ(…args){
-   if(!args.length) return;
    const fn = args.shift();
-   if(isNullish(fn))return;
+   if(fn === null || fn === undefined)return;
    return new fn(…args);
 }
 

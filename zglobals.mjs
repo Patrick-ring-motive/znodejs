@@ -727,8 +727,11 @@ globlThis.newQ = function newQ(…args){
 globalThis.znew = function znew(…args){
    try{
      const fn = args.shift();
-     return fn(…args);
+     return new fn(...args);
    }catch(e){
+    try{
+      return fn(...args);
+    }catch{
       try{
          return Object.create(fn?.prototype??fn);
       }catch{
@@ -738,6 +741,7 @@ globalThis.znew = function znew(…args){
             return e;
          }
       }
+     }
    }
 }
 

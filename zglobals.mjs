@@ -730,7 +730,7 @@ globalThis.znew = function znew(…args){
      return fn(…args);
    }catch(e){
       try{
-         return Object.create(fn);
+         return Object.create(fn?.prototype??fn);
       }catch{
          try{
            return Object.create(Object(fn));

@@ -712,3 +712,33 @@ globalThis.znewURL = function(url, base) {
     }
 
 }
+
+globalThis.isNullish = function isNullish(obj){
+  if(obj === null || obj === undefined) return true;
+  return false;
+}
+
+globlThis.newQ = function newQ(…args){
+   if(!args.length) return;
+   const fn = args.shift();
+   if(isNullish(fn))return;
+   return new fn(…args);
+}
+
+globalThis.znew = function znew(…args){
+   try{
+     const fn = args.shift();
+     return fn(…args);
+   }catch(e){
+      try{
+         return Object.create(fn);
+      }catch{
+         try{
+           return Object.create(Object(fn));
+         }catch{
+            return e;
+         }
+      }
+   }
+}
+

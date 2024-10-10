@@ -718,13 +718,13 @@ globalThis.isNullish = function isNullish(obj){
   return false;
 }
 
-globlThis.newQ = function newQ(…args){
+globlThis.newQ = function newQ(...args){
    const fn = args.shift();
-   if(fn === null || fn === undefined)return;
-   return new fn(…args);
+   if(fn !== null && fn !== undefined)
+     return new fn(...args);
 }
 
-globalThis.znew = function znew(…args){
+globalThis.znew = function znew(...args){
    try{
      const fn = args.shift();
      return new fn(...args);

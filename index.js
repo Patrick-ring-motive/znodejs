@@ -55,7 +55,7 @@ void (async function ProxyServerExample() {
     /* check to see if the response is not a text format */
 
     /* Copy over target response and return */
-    for await (const chunk of response.body??[]){
+    for await (const chunk of response?.body??[]){
       res?.write?.(chunk);
     }
     res?.zend?.();

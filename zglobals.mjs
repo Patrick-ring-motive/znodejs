@@ -277,19 +277,209 @@ globalThis.zawait = async function(promise) {
         return e;
     }
 }
-
-globalThis.newReadableStream = function newReadableStream(input) {
-    return new Response(input).body;
+globalThis.toCharCodes = function toCharCodes(str) {
+  const charCodeArr = [];
+  const str_length = str.length;
+  for(let i = 0; i < str_length; i++) {
+    const code = str.charCodeAt(i);
+    charCodeArr.push(code);
+  }
+  return new Uint8Array(charCodeArr);
 }
-
-globalThis.znewReadableStream = function znewReadableStream(input) {
+globalThis.ztoCharCodes = function ztoCharCodes(strng) {
+  const str = String(strng);
+  const charCodeArr = [];
+  const str_length = str.length;
+  let err;
+  for(let i = 0; i < str_length; i++) {
     try {
-        return newReadableStream(input);
-    } catch (e) {
-        return newReadableStream(e.message);
+      const code = str.charCodeAt(i);
+      charCodeArr.push(code);
+    } catch(e) {
+      err = e;
+      continue;
     }
+  }
+  if(err){
+    console.log(err,...arguments);
+  }
+  return new Uint8Array(charCodeArr);
+}
+globalThis.fromCharCodes = function fromCharCodes(arr) {
+  const charArr = [];
+  const arr_length = arr.length;
+  for(let i = 0; i < arr_length; i++) {
+    const char = String.fromCharCode(arr[i]);
+    charArr.push(char);
+  }
+  return charArr.join``;
+}
+globalThis.zfromCharCodes = function zfromCharCodes(arr) {
+  try {
+    arr = [...arr]
+  } catch(e) {
+    console.log(e,...arguments);
+    arr = [...arguments]
+  }
+  const charArr = [];
+  const arr_length = arr.length;
+  let err;
+  for(let i = 0; i < arr_length; i++) {
+    try {
+      const char = String.fromCharCode(arr[i]);
+      charArr.push(char);
+    } catch(e) {
+      err = e;
+      continue;
+    }
+  }
+  if(err){
+    console.log(err,...arguments);
+  }
+  return charArr.join``;
 }
 
+function cloneStream(stream){
+  const tees = stream.tee()
+  assignAll(stream,tees[0]);
+  return tees[1];
+}
+globalThis.bytes = async function bytes(res){
+  return await (res?.bytes?.() ?? (new Uint8Array(await res.arrayBuffer())));
+};
+globalThis.httpEncode = async function httpEncode(val){
+  return  await bytes(new Response(val));
+}
+globalThis.httpDecode = async function httpDecode(val){
+  return  await new Response(val).text();
+}
+
+globalThis.makeReadableStream = function makeReadableStream(data){
+    const dat = [data];
+    let nextChunk = ()=>dat.shift();
+    if(data[Symbol.iterator]){
+      const iter = data[Symbol.iterator]();
+      nextChunk = ()=>iter.next();
+    }else if(data[Symbol.asyncIterator]){
+      nextChunk = async ()=>await data[Symbol.asyncIterator]().next();
+    }else if(data.next){
+      nextChunk = ()=>data.next();
+    }else if(data.read){
+      nextChunk = ()=>data.read();
+    }else if(data.length){
+      const iter = [][Symbol.iterator].call(data);
+      nextChunk = ()=>iter.next();
+    }else if(arguments.length>1){
+      const iter = [][Symbol.iterator].call(arguments);
+      nextChunk = ()=>iter.next();
+    }
+    let resolveStreamProcessed;
+    const streamProcessed = new Promise(resolve => resolveStreamProcessed = resolve);
+
+    const stream = new ReadableStream({
+    async start(controller){
+    while(true){
+      try{
+      const dataChunk = await nextChunk();
+      if(dataChunk?.done || !dataChunk){
+        break;
+      }
+    let value = dataChunk.value;
+    if(Number.isInteger(value)){
+      value = new Uint32Array([value]);
+    }else if(value?.every?.(x=>Number.isInteger(x))){
+              value = new Uint32Array([...value]);
+            }
+        const response = new Response(value);
+        const chunk = await (response?.bytes?.() ?? (new Uint8Array(await response.arrayBuffer())));
+    controller.enqueue(chunk);
+      }catch{
+          break;
+        }
+    }
+    controller.close();
+    resolveStreamProcessed();
+  }
+});
+  streamProcessed.then(() => {
+      tryReleaseLock(stream);
+  });
+  return stream;
+}
+globalThis.zcontrollerClose = function zcontrollerClose(controller) {
+  try {
+    return controller.close();
+  } catch (e) {
+    console.log(e,...arguments);
+    return controller;
+  }
+}
+globalThis.zcontrollerEnqueue = async function zcontrollerEnqueue(controller,encodedChunk){
+  try{
+    if('Uint8Array' === encodedChunk?.constructor?.name){
+      controller.enqueue(encodedChunk);
+    }else{
+      const response = znewResponse(encodedChunk);
+      const chunk = await (response?.bytes?.() ?? (new Uint8Array(await response.arrayBuffer())));
+      controller.enqueue(chunk);
+    }
+  }catch(e){
+    console.log(e,...arguments);
+    try{
+      const response = new Response(`/*${e.message}*/`);
+      const chunk = await (response?.bytes?.() ?? (new Uint8Array(await response.arrayBuffer())));
+      controller.enqueue(chunk);
+    }catch{}
+  }
+}
+globalThis.tryReleaseLock = function(stream, reader = stream.getReader()) {
+  if(stream?.locked) {
+    try {
+      reader.releaseLock();
+    } catch (e) {
+      console.log(e,...arguments);
+    }
+  }
+}
+globalThis.newReadableStream = function(input) {
+  return new Response(input).body;
+}
+
+globalThis.znewReadableStream = function znewReadableStream() {
+  try {
+    const type = String(arguments?.[0]?.constructor?.name);
+    if(type === 'ReadableStream'){
+        return arguments[0];
+      //return cloneStream(arguments[0]);
+    }
+    if(arguments?.[0]?.start){
+      try{
+        return new ReadableStream(...arguments);
+      }catch(e){
+        console.log(e,...arguments);
+      }
+    }
+    if(/Blob|ArrayBuffer|.+Array|DataView|FormData|URLSearchParams|String/.test(type)){
+        return newReadableStream(...arguments);
+    }
+    try{
+      if(ReadableStream.from){
+        //return ReadableStream.from(...arguments);
+      }
+        return makeReadableStream(...arguments);
+    }catch(e){
+      try{
+      console.log(e,...arguments);
+        return ReadableStream?.from?.(...arguments);
+      }catch(e){
+        return newReadableStream(e.message);
+      }
+    }
+  } catch (e) {
+    console.log(e,...arguments);
+    return newReadableStream(e?.message);
+  }
+}
 globalThis.newArrayBuffer = function newArrayBuffer(input) {
     const buf = new ArrayBuffer(input.length * 2);
     const bufView = new Uint16Array(buf);
@@ -389,6 +579,25 @@ globalThis.appendZResponseMethods = function appendZResponseMethods(res) {
     }
     return res;
 }
+
+globalThis.zbody = function zbody(res){
+        res.body ??= znewReadableStream(`${res?.body}`);
+        res.body.zgetReader ??= function() {
+            try {
+                let r = Object.create(null);
+                r.reader = res.body.getReader();
+                r.almostDone = false;
+                return r;
+            } catch (e) {
+                let r = Object.create(null);
+                r.reader = znewReadableStream(e.message).getReader();
+                r.almostDone = false;
+                return r;
+            }
+        }
+        return res.body
+    }
+
 globalThis.zfetch = async function zfetch() {
     [...arguments].forEach(x => {
         try {
@@ -396,7 +605,7 @@ globalThis.zfetch = async function zfetch() {
                 delete x?.body;
             }
         } catch (e) {
-            console.log(e);
+            console.log(e,this,...arguments);;
         }
     });
     try {
@@ -406,7 +615,7 @@ globalThis.zfetch = async function zfetch() {
         try{
             return appendZResponseMethods(await fetch.call(this,arguments[0]));
         }catch{
-            console.log(e);
+            console.log(e,this,...arguments);;
             const match = fuzzyMatch(e.message);
             if (match[2] >= 2) {
             code = +match[0] || 569;
@@ -487,7 +696,7 @@ globalThis.zfetchText = async function zfetchText() {
                 delete x?.body;
             }
         } catch (e) {
-            console.log(e);
+            console.log(e,this,...arguments);;
         }
     });
     try {
@@ -508,7 +717,7 @@ globalThis.zfetchArrayBuffer = async function zfetchArrayBuffer() {
                 delete x?.body;
             }
         } catch (e) {
-            console.log(e);
+            console.log(e,this,...arguments);;
         }
     });
     try {
@@ -716,13 +925,35 @@ globalThis.znewURL = function(url, base) {
 globalThis.isNullish = function isNullish(obj){
   if(obj === null || obj === undefined) return true;
   return false;
-}
+};
 
-globlThis.newQ = function newQ(...args){
-   const fn = args.shift();
-   if(fn !== null && fn !== undefined)
-     return new fn(...args);
-}
+(()=>{
+  const q = (varFn) => {
+    try{
+      return varFn?.();
+    }catch(e){
+      if(e.name != 'ReferenceError'){
+        throw e;
+      }
+    }
+  }
+
+  const globalObject = q(()=>globalThis) // works in most modern runtimes
+                    ?? q(()=>self) // also works in most modern runtimes
+                    ?? q(()=>global) // fallback for older nodejs
+                    ?? q(()=>window) // fallback for older browsers
+                    ?? this ?? {}; // fallbacks for edge cases.
+
+  for(let x of ['globalThis','self','global']){
+    globalObject[x] = globalObject;
+  }
+  self.q = q;
+
+  self.newQ = (...args) => {
+     const fn = args?.shift?.();
+     return fn && new fn(...args);
+  };
+})();
 
 globalThis.znew = function znew(...args){
    try{

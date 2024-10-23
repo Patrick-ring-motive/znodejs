@@ -1,4 +1,6 @@
 /** Optional Chaining literally everything to try and idiot proof this code */
+
+
 void (async function ProxyServerExample() {
   await import("./zglobals.mjs");
   const zBuffer = (await import("./zbuffer.mjs"))?.zBuffer;
@@ -53,7 +55,9 @@ void (async function ProxyServerExample() {
     /* check to see if the response is not a text format */
 
     /* Copy over target response and return */
-    const resBody = await response?.zarrayBuffer?.();
-    res?.zend?.(zBuffer?.zfrom?.(resBody));
+    for await (const chunk of response.body??[]){
+      res?.write?.(chunk);
+    }
+    res?.zend?.();
   });
 })();

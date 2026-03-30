@@ -1,7 +1,6 @@
 /** Optional Chaining literally everything to try and idiot proof this code */
 
-
-void (async function ProxyServerExample() {
+void(async function ProxyServerExample() {
   await import("./zglobals.mjs");
   const zBuffer = (await import("./zbuffer.mjs"))?.zBuffer;
   const zhttp = (await import("./zhttp.mjs"))?.zhttp;
@@ -10,7 +9,7 @@ void (async function ProxyServerExample() {
 
   const server = zhttp?.createServer?.();
   server?.zlisten?.(3000);
-  server?.zonRequest?.(async function (req, res) {
+  server?.zonRequest?.(async function(req, res) {
     Object.assign(req?.headers ?? {}, {
       host: hostTarget,
       referer: hostTarget,
@@ -55,7 +54,7 @@ void (async function ProxyServerExample() {
     /* check to see if the response is not a text format */
 
     /* Copy over target response and return */
-    for await (const chunk of response?.body??[]){
+    for await (const chunk of response?.body ?? []) {
       res?.write?.(chunk);
     }
     res?.zend?.();

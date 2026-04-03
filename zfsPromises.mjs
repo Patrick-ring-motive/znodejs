@@ -8,18 +8,18 @@ import {
 
 export const zreadFile = async function() {
   try {
-      return await readFile(...arguments);
+    return await readFile(...arguments);
   } catch (e) {
-      if (arguments[1]?.encoding || typeof arguments[1] == 'string') {
-          return e.message;
-      }
-      return Buffer.from(e.message);
+    if (arguments[1]?.encoding || typeof arguments[1] == 'string') {
+      return e.message;
+    }
+    return Buffer.from(e.message);
   }
 }
 export const zwriteFile = async function() {
   try {
-      return await writeFile(...arguments);
+    return await writeFile(...arguments);
   } catch (e) {
-      console.log(e);
+    console.log(e);
   }
 };

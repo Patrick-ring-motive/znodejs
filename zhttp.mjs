@@ -45,115 +45,114 @@ http.Server.prototype.zlisten = function() {
   }
 }
 
-http.IncomingMessage.prototype.onReadable = function(){
-  return this.on('readable',...arguments);
+http.IncomingMessage.prototype.onReadable = function() {
+  return this.on('readable', ...arguments);
 }
 
-http.IncomingMessage.prototype.zonReadable = function(){
-  try{
+http.IncomingMessage.prototype.zonReadable = function() {
+  try {
     return this.onReadable(...arguments);
-  }catch(e){
+  } catch (e) {
     console.log(e);
     return e.message;
   }
 }
 
-http.IncomingMessage.prototype.onEnd = function(){
-  return this.on('end',...arguments);
+http.IncomingMessage.prototype.onEnd = function() {
+  return this.on('end', ...arguments);
 }
 
-http.IncomingMessage.prototype.zonEnd = function(){
-  try{
+http.IncomingMessage.prototype.zonEnd = function() {
+  try {
     return this.onEnd(...arguments);
-  }catch(e){
+  } catch (e) {
     console.log(e);
     return e.message;
   }
 }
 
-http.IncomingMessage.prototype.zread = function(){
-  try{
-    return this.read(...arguments)||"";
-  }catch(e){
+http.IncomingMessage.prototype.zread = function() {
+  try {
+    return this.read(...arguments) || "";
+  } catch (e) {
     console.log(e);
     return e.message;
   }
 }
 
-
-http.ServerResponse.prototype.zgetHeader=function(key){
-  try{
+http.ServerResponse.prototype.zgetHeader = function(key) {
+  try {
     return this.getHeader(String(key));
-  }catch(e){
+  } catch (e) {
     return e.message;
   }
 }
 
-http.ServerResponse.prototype.zremoveHeader=function(key){
-  try{
+http.ServerResponse.prototype.zremoveHeader = function(key) {
+  try {
     return this.removeHeader(String(key));
-  }catch(e){
+  } catch (e) {
     return e.message;
   }
 }
 
-http.ServerResponse.prototype.zsetHeader=function(key,values){
-  try{
-    if(values?.map?.call){
-      return this.setHeader(String(key),values?.map?.(x=>String(x)));
-    }else{
-      return this.setHeader(String(key),String(values));
+http.ServerResponse.prototype.zsetHeader = function(key, values) {
+  try {
+    if (values?.map?.call) {
+      return this.setHeader(String(key), values?.map?.(x => String(x)));
+    } else {
+      return this.setHeader(String(key), String(values));
     }
-  }catch(e){
-    return this.setHeader(e.name,e.message);
+  } catch (e) {
+    return this.setHeader(e.name, e.message);
   }
 }
 
-http.ServerResponse.prototype.zsetHeaders=function(headers){
-  try{
+http.ServerResponse.prototype.zsetHeaders = function(headers) {
+  try {
     return this.setHeaders(headers);
-  }catch(e){
-    try{
-      for(const x in headers){
-        this.zsetHeader(x,headers[x]);
+  } catch (e) {
+    try {
+      for (const x in headers) {
+        this.zsetHeader(x, headers[x]);
       }
-      this.zsetHeader(e.name,e.message);
-    }catch(e){
+      this.zsetHeader(e.name, e.message);
+    } catch (e) {
       console.log(e);
-      this.zsetHeader(e.name,e.message);
+      this.zsetHeader(e.name, e.message);
     }
   }
 }
 
-http.ServerResponse.prototype.zgetHeaders=function(){
-  try{
-    return Object.setPrototypeOf(this.getHeaders(),{});
-  }catch(e){
+http.ServerResponse.prototype.zgetHeaders = function() {
+  try {
+    return Object.setPrototypeOf(this.getHeaders(), {});
+  } catch (e) {
     return {};
   }
 }
 
-http.ServerResponse.prototype.zgetHeaderNames=function(){
-  try{
+http.ServerResponse.prototype.zgetHeaderNames = function() {
+  try {
     return this.getHeaderNames();
-  }catch(e){
+  } catch (e) {
     return [];
   }
 }
 
-http.ServerResponse.prototype.zend=function(note){
-  try{
-    if(note){
+http.ServerResponse.prototype.zend = function(note) {
+  try {
+    if (note) {
       return this.end(note);
     }
     return this.end();
-  }catch(e){
-    try{
+  } catch (e) {
+    try {
       return this.end(String(note));
-    }catch(e){
-      try{
+    } catch (e) {
+      try {
         return this.end();
-      }catch(e){
+      } catch (e) {
         console.log(e);
         return e;
       }
@@ -161,18 +160,18 @@ http.ServerResponse.prototype.zend=function(note){
   }
 }
 
-String.prototype.zmatch = function(){
-  try{
-    return this.match(...arguments)||[];
-  }catch(e){
+String.prototype.zmatch = function() {
+  try {
+    return this.match(...arguments) || [];
+  } catch (e) {
     return [e.message];
   }
 }
 
-RegExp.prototype.ztest=function(str){
-  try{
+RegExp.prototype.ztest = function(str) {
+  try {
     return this.test(String(str));
-  }catch(e){
+  } catch (e) {
     return false;
   }
 }
